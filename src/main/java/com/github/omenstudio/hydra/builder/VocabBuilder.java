@@ -19,16 +19,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 @Slf4j
 @Component
 public class VocabBuilder {
 
     private String apiDoc = null;
 
-    public String buildVocabulary() {
+    private String vocabFile = null;
+
+    private String vocabDirectory;
+
+
+
+    public String buildVocabulary(String vocabDirectory, String vocabFile) {
         log.info("#buildVocabulary: started");
 
-        if (apiDoc == null) {
+        if (apiDoc == null || this.vocabFile == null || !this.vocabFile.equals(vocabFile)) {
+            this.vocabFile = vocabFile;
+            this.vocabDirectory = vocabDirectory;
             readMainVocab();
         }
 
@@ -38,7 +47,7 @@ public class VocabBuilder {
 
     private void readMainVocab() {
 
-        String readedData = readFileContent("public/vocab/vocab.json")
+        String readedData = readFileContent(vocabDirectory + "/" + vocabFile)
                 .replaceAll("API_ADDR", HydraUrlResolver.getApiAddress())
                 .replaceAll("VOCAB_ADDR", HydraUrlResolver.getVocabAddress());
 
@@ -49,7 +58,7 @@ public class VocabBuilder {
 
         log.info("#readMainVocab: vocab parsed as json");
 
-        findFilesInDir("public/vocab/").stream()
+        findFilesInDir(vocabDirectory).stream()
                 .filter(e -> !e.toString().endsWith("vocab.json"))
                 .map(this::readFileContent)
                 .map(parser::parse)
