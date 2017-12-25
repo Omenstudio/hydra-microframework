@@ -45,7 +45,7 @@ public class HydraContextAspect {
     @SneakyThrows
     @Around("requestForClass()")
     public Object makeResponseForClass(ProceedingJoinPoint joinPoint) {
-        return contextBuilder.buildForClass(joinPoint.proceed().getClass());
+        return contextBuilder.buildForClass(((Class) joinPoint.proceed()));
     }
 
 
@@ -56,6 +56,6 @@ public class HydraContextAspect {
     @SneakyThrows
     @Around("requestForCollection()")
     public Object makeResponseForCollection(ProceedingJoinPoint joinPoint) {
-        return contextBuilder.buildForCollection(joinPoint.proceed().getClass());
+        return contextBuilder.buildForCollection(((Class) joinPoint.proceed()));
     }
 }
