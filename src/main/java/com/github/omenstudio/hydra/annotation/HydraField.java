@@ -11,6 +11,6 @@ public @interface HydraField {
 
     String[] value();
 
-    String[] keys() default {};
+    boolean includeInCollection() default false;
 
 }

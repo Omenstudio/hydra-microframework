@@ -48,6 +48,15 @@
             <version>2.8.2</version>
         </dependency>
 
+        <!-- Lombok because I'm lazy -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.18</version>
+            <scope>provided</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>

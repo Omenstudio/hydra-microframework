@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HydraLink {
     String value();
+
+    boolean includeInCollection() default false;
 }

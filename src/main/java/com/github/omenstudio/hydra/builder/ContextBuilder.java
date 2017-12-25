@@ -93,7 +93,7 @@ public class ContextBuilder {
             return;
 
         String[] values = annotation.value();
-        String[] keys = annotation.keys();
+        String[] keys = new String[0];
 
         // If annotation has been used with different keys/values -> skip
         if (values.length == 0 || values.length > 1 && values.length != keys.length) {
