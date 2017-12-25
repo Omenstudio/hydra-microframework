@@ -1,7 +1,7 @@
 package com.github.omenstudio.hydra.utils;
 
-import com.github.omenstudio.hydra.annotation.HydraLink;
 import com.github.omenstudio.hydra.annotation.JsonExclude;
+import com.github.omenstudio.hydra.annotation.model.HydraLink;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 

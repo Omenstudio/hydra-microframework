@@ -1,8 +1,8 @@
 package com.github.omenstudio.hydra.builder;
 
-import com.github.omenstudio.hydra.annotation.HydraEntity;
-import com.github.omenstudio.hydra.annotation.HydraField;
-import com.github.omenstudio.hydra.annotation.HydraLink;
+import com.github.omenstudio.hydra.annotation.model.HydraEntity;
+import com.github.omenstudio.hydra.annotation.model.HydraField;
+import com.github.omenstudio.hydra.annotation.model.HydraLink;
 import com.github.omenstudio.hydra.utils.AnnotationJsonExclusionStrategy;
 import com.github.omenstudio.hydra.utils.HydraUrlResolver;
 import com.google.gson.*;

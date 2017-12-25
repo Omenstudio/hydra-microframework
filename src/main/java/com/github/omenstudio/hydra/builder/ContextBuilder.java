@@ -1,23 +1,23 @@
 package com.github.omenstudio.hydra.builder;
 
-import com.github.omenstudio.hydra.annotation.HydraEntity;
-import com.github.omenstudio.hydra.annotation.HydraField;
-import com.github.omenstudio.hydra.annotation.HydraLink;
+import com.github.omenstudio.hydra.annotation.model.HydraEntity;
+import com.github.omenstudio.hydra.annotation.model.HydraField;
+import com.github.omenstudio.hydra.annotation.model.HydraLink;
 import com.github.omenstudio.hydra.utils.HydraUrlResolver;
 import com.google.gson.JsonObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 
+@Slf4j
+@Component
 public class ContextBuilder {
 
-    private final static Logger logger = LoggerFactory.getLogger(ContextBuilder.class);
-
-    // doc this
-    public static JsonObject buildForEntryPoint(String... links) {
+    
+    public JsonObject buildForEntryPoint(String... links) {
         JsonObject resultJson = new JsonObject();
         resultJson.addProperty("EntryPoint", "vocab:EntryPoint");
 
@@ -31,8 +31,8 @@ public class ContextBuilder {
         return wrapContext(resultJson);
     }
 
-    // doc this
-    public static JsonObject buildForCollection(Class collectionItemClass) {
+    
+    public JsonObject buildForCollection(Class collectionItemClass) {
         JsonObject resultJson = new JsonObject();
         resultJson.addProperty(
                 collectionItemClass.getSimpleName() + "Collection",
@@ -43,8 +43,8 @@ public class ContextBuilder {
         return wrapContext(resultJson);
     }
 
-    // doc this
-    public static JsonObject buildForClass(Class beanClass) {
+    
+    public JsonObject buildForClass(Class beanClass) {
         JsonObject resultJson = new JsonObject();
 
         // At first we write info about class
@@ -57,12 +57,12 @@ public class ContextBuilder {
         return wrapContext(resultJson);
     }
 
-    // doc this
-    private static JsonObject buildInfoAboutEntity(Class beanClass, JsonObject jsonObject) {
+    
+    private JsonObject buildInfoAboutEntity(Class beanClass, JsonObject jsonObject) {
         Annotation hydraTypeAnnotation = beanClass.getDeclaredAnnotation(HydraEntity.class);
 
         if (hydraTypeAnnotation == null) {
-            logger.error("Can't build context for class " + beanClass.toString() + ". " +
+            log.error("Can't build context for class " + beanClass.toString() + ". " +
                     "There are no @HydraField annotation on class");
             return jsonObject;
         }
@@ -71,8 +71,8 @@ public class ContextBuilder {
         return jsonObject;
     }
 
-    // doc this
-    private static JsonObject buildInfoAboutFields(Class beanClass, JsonObject jsonObject) throws NullPointerException {
+    
+    private JsonObject buildInfoAboutFields(Class beanClass, JsonObject jsonObject) throws NullPointerException {
 
         for (Field field : beanClass.getDeclaredFields()) {
 
@@ -87,7 +87,7 @@ public class ContextBuilder {
         return jsonObject;
     }
 
-    private static void buildInfoAboutHydraTypeField(Field field, Class beanClass, JsonObject resultObject) {
+    private void buildInfoAboutHydraTypeField(Field field, Class beanClass, JsonObject resultObject) {
         HydraField annotation = field.getDeclaredAnnotation(HydraField.class);
         if (annotation == null)
             return;
@@ -97,7 +97,7 @@ public class ContextBuilder {
 
         // If annotation has been used with different keys/values -> skip
         if (values.length == 0 || values.length > 1 && values.length != keys.length) {
-            logger.warn("Can't build context for field " + field.getName() +
+            log.warn("Can't build context for field " + field.getName() +
                     " of class " + field.getDeclaringClass().toString() + ". " +
                     "Illegal @HydraField annotation arguments");
             return;
@@ -118,7 +118,7 @@ public class ContextBuilder {
     }
 
 
-    private static void buildInfoAboutFieldWithLink(Field field, Class beanClass, JsonObject resultJson) {
+    private void buildInfoAboutFieldWithLink(Field field, Class beanClass, JsonObject resultJson) {
         HydraLink annotation = field.getDeclaredAnnotation(HydraLink.class);
         if (annotation == null)
             return;
@@ -126,7 +126,7 @@ public class ContextBuilder {
         resultJson.addProperty(field.getName(), annotation.value());
     }
 
-    private static JsonObject wrapContext(JsonObject contextInfo) {
+    private JsonObject wrapContext(JsonObject contextInfo) {
         contextInfo.addProperty("hydra", "http://www.w3.org/ns/hydra/core#");
         contextInfo.addProperty("vocab", HydraUrlResolver.getVocabAddress() + "#");
 

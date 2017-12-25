@@ -4,8 +4,7 @@ import com.github.omenstudio.hydra.utils.HydraUrlResolver;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -20,14 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Slf4j
 @Component
 public class VocabBuilder {
-    private static Logger logger = LoggerFactory.getLogger(VocabBuilder.class);
 
     private String apiDoc = null;
 
     public String buildVocabulary() {
-        logger.info("#buildVocabulary: started");
+        log.info("#buildVocabulary: started");
 
         if (apiDoc == null) {
             readMainVocab();
@@ -48,7 +47,7 @@ public class VocabBuilder {
         JsonObject resultJson = parser.parse(readedData).getAsJsonObject();
         JsonArray classes = resultJson.getAsJsonArray("supportedClass");
 
-        logger.info("#readMainVocab: vocab parsed as json");
+        log.info("#readMainVocab: vocab parsed as json");
 
         findFilesInDir("public/vocab/").stream()
                 .filter(e -> !e.toString().endsWith("vocab.json"))
@@ -56,7 +55,7 @@ public class VocabBuilder {
                 .map(parser::parse)
                 .forEach(classes::add);
 
-        logger.info("#readMainVocab: additional files are readed");
+        log.info("#readMainVocab: additional files are readed");
 
         apiDoc = resultJson.toString();
     }
@@ -66,8 +65,8 @@ public class VocabBuilder {
         try {
             return readFileContent(new ClassPathResource(resourcePath).getURI().toURL());
         } catch (IOException e) {
-            logger.error("#readFileContent: " + e.toString());
-            logger.error(e.toString());
+            log.error("#readFileContent: " + e.toString());
+            log.error(e.toString());
         }
         return "";
     }
@@ -103,7 +102,7 @@ public class VocabBuilder {
 
             return out.toString();
         } catch (Exception e) {
-            logger.error(e.toString());
+            log.error(e.toString());
         }
         return "";
     }
