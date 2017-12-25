@@ -31,7 +31,6 @@ public class VocabBuilder {
     private String vocabDirectory;
 
 
-
     public String buildVocabulary(String vocabDirectory, String vocabFile) {
         log.info("#buildVocabulary: started");
 
@@ -48,8 +47,8 @@ public class VocabBuilder {
     private void readMainVocab() {
 
         String readedData = readFileContent(vocabDirectory + "/" + vocabFile)
-                .replaceAll("API_ADDR", HydraUrlResolver.getApiAddress())
-                .replaceAll("VOCAB_ADDR", HydraUrlResolver.getVocabAddress());
+                .replaceAll("API_ADDR", HydraUrlResolver.getServerAddress() + HydraUrlResolver.getApiAddress())
+                .replaceAll("VOCAB_ADDR", HydraUrlResolver.getServerAddress() + HydraUrlResolver.getVocabAddress());
 
         final JsonParser parser = new JsonParser();
 
@@ -80,6 +79,7 @@ public class VocabBuilder {
         return "";
     }
 
+
     private List<URL> findFilesInDir(String resourceDir) {
         List<URL> res = new ArrayList<>();
 
@@ -98,6 +98,7 @@ public class VocabBuilder {
 
         return res;
     }
+
 
     private String readFileContent(URL fileUrl) {
         try {

@@ -128,7 +128,7 @@ public class ContextBuilder {
 
     private JsonObject wrapContext(JsonObject contextInfo) {
         contextInfo.addProperty("hydra", "http://www.w3.org/ns/hydra/core#");
-        contextInfo.addProperty("vocab", HydraUrlResolver.getVocabAddress() + "#");
+        contextInfo.addProperty("vocab", HydraUrlResolver.getServerAddress() + HydraUrlResolver.getVocabAddress() + "#");
 
         JsonObject contextWrapper = new JsonObject();
         contextWrapper.add("@context", contextInfo);

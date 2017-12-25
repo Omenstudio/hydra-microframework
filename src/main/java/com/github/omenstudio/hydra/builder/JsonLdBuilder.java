@@ -42,6 +42,9 @@ public class JsonLdBuilder {
      */
     public String buildResponse(Object objectFromController) {
         // Depending from object type we need to call different methods
+        if (objectFromController == null) {
+            return null;
+        }
 
         // Collection
         if (objectFromController instanceof Collection) {
@@ -74,18 +77,19 @@ public class JsonLdBuilder {
         JsonArray membersJson = new JsonArray();
         boolean inited = false;
 
-        for (Object obj : entityCollection) {
+        for (Object entity : entityCollection) {
             if (!inited) {
-                String className = obj.getClass().getSimpleName();
-                String itemPathId = HydraUrlResolver.getApiPath() + "/" + className.toLowerCase() + "s/";
-                resultJson.addProperty("@id", itemPathId);
-                resultJson.addProperty("@context", HydraUrlResolver.getApiPath() + "/contexts/" + className + "Collection");
-                resultJson.addProperty("@type", className + "Collection");
+                String className = entity.getClass().getSimpleName();
+                String collectionName = className + "Collection";
+
+                resultJson.addProperty("@id", HydraUrlResolver.getPathToCollection(entity));
+                resultJson.addProperty("@context", HydraUrlResolver.getContextsAddress() + collectionName);
+                resultJson.addProperty("@type", collectionName);
 
                 inited = true;
             }
 
-            membersJson.add(serializeLinkToEntity(obj));
+            membersJson.add(serializeLinkToEntity(entity));
         }
 
         resultJson.add("members", membersJson);
@@ -124,18 +128,10 @@ public class JsonLdBuilder {
             return null;
 
         String className = entityObject.getClass().getSimpleName();
-        long objectId = 0;
-        try {
-            Field field = entityObject.getClass().getDeclaredField("id");
-            field.setAccessible(true);
-            objectId = ((long) field.get(entityObject));
-        } catch (NoSuchFieldException | IllegalAccessException | NullPointerException e) {
-
-        }
 
         JsonObject resultJson = gsonParser.parse(gsonBuilder.toJson(entityObject)).getAsJsonObject();
-        resultJson.addProperty("@id", HydraUrlResolver.getApiPath() + "/" + className.toLowerCase() + "s/" + objectId);
-        resultJson.addProperty("@context", HydraUrlResolver.getApiPath() + "/contexts/" + className);
+        resultJson.addProperty("@id", HydraUrlResolver.getPathToEntity(entityObject));
+        resultJson.addProperty("@context", HydraUrlResolver.getContextsAddress() + className);
         resultJson.addProperty("@type", className);
 
         // For each field, which must be serialized
@@ -203,20 +199,10 @@ public class JsonLdBuilder {
         HydraEntity annotation = entityObject.getClass().getDeclaredAnnotation(HydraEntity.class);
 
         String className = entityObject.getClass().getSimpleName();
-        String itemPathId = HydraUrlResolver.getApiPath() + "/" + className.toLowerCase() + "s/";
         String itemType = annotation != null ? annotation.value() : "http://schema.org/" + className;
 
-        long id = 0;
-        try {
-            Field idField = entityObject.getClass().getDeclaredField("id");
-            idField.setAccessible(true);
-            id = ((long) idField.get(entityObject));
-        } catch (IllegalAccessException | NoSuchFieldException | ClassCastException e) {
-            log.error("#serializeLinkToEntity: " + e.toString());
-        }
-
         JsonObject itemJsonObject = new JsonObject();
-        itemJsonObject.addProperty("@id", itemPathId + Long.toString(id));
+        itemJsonObject.addProperty("@id", HydraUrlResolver.getPathToEntity(entityObject));
         itemJsonObject.addProperty("@type", itemType);
 
         // And we need to serialize additional properties,

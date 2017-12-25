@@ -1,46 +1,74 @@
 package com.github.omenstudio.hydra.utils;
 
+import com.github.omenstudio.hydra.annotation.model.HydraEntity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
+
+import java.lang.reflect.Field;
+
+
 public class HydraUrlResolver {
-    private static String applicationAddress = "http://localhost:8080";
 
-    private static String apiPath = "/api";
+    @Getter
+    @Setter
+    private static String serverAddress;
 
-    private static String vocabPath = "/api/vocab";
+    @Getter
+    @Setter
+    private static String apiAddress;
+
+    @Getter
+    @Setter
+    private static String vocabAddress;
+
+    @Getter
+    @Setter
+    private static String contextsAddress;
 
 
-    public static String getApplicationAddress() {
-        return applicationAddress;
+    /**
+     * <p>
+     * Gets path to item's collection.
+     *
+     * <p>
+     * Takes value from HydraEntity annotation
+     * or calculate custom, based on the class simple name.
+     *
+     * @param collectionItem any object from collection
+     * @return
+     *
+     * @see HydraEntity
+     */
+    public static String getPathToCollection(Object collectionItem) {
+        HydraEntity hydraEntityAnnotation = collectionItem.getClass().getDeclaredAnnotation(HydraEntity.class);
+
+        if (hydraEntityAnnotation != null && !hydraEntityAnnotation.pathToCollection().isEmpty()) {
+            return apiAddress + hydraEntityAnnotation.pathToCollection();
+        }
+
+        return apiAddress + "/" + collectionItem.getClass().getSimpleName().toLowerCase() + "s/";
     }
 
-    public static void setApplicationAddress(String applicationAddress) {
-        if (applicationAddress.length() <= 0)
-            throw new IllegalArgumentException("Application address must be valid");
-        HydraUrlResolver.applicationAddress = applicationAddress;
+
+    @SneakyThrows
+    public static String getPathToEntity(Object entityObject) {
+        // Let's find object #ID
+        Object objectId = 0;
+        Field field = entityObject.getClass().getDeclaredField("id");
+        field.setAccessible(true);
+        objectId = field.get(entityObject);
+
+        // If programmer has setup the url to item
+        HydraEntity hydraEntityAnnotation = entityObject.getClass().getDeclaredAnnotation(HydraEntity.class);
+        if (hydraEntityAnnotation != null && !hydraEntityAnnotation.pathToEntity().isEmpty()) {
+            return apiAddress + hydraEntityAnnotation.pathToEntity() + objectId.toString();
+        }
+
+        // Default value
+        return apiAddress + "/" + entityObject.getClass().getSimpleName().toLowerCase() + "s/" + objectId.toString();
     }
 
-    public static String getApiPath() {
-        return apiPath;
-    }
-
-    public static String getApiAddress() {
-        return applicationAddress + apiPath;
-    }
-
-    public static void setApiPath(String apiPath) {
-        HydraUrlResolver.apiPath = apiPath;
-    }
-
-    public static String getVocabPath() {
-        return vocabPath;
-    }
-
-    public static String getVocabAddress() {
-        return applicationAddress + vocabPath;
-    }
-
-    public static void setVocabPath(String vocabPath) {
-        HydraUrlResolver.vocabPath = vocabPath;
-    }
 
 
 }
