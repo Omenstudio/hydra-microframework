@@ -17,11 +17,13 @@ import java.util.Collection;
 @Component
 public class JsonLdBuilder {
 
-    private static final Gson gsonBuilder;
+    private final Gson gsonBuilder;
 
-    private static final JsonParser gsonParser;
+    private final JsonParser gsonParser;
 
-    static {
+
+
+    public JsonLdBuilder() {
         gsonBuilder = new GsonBuilder()
                 .setExclusionStrategies(new AnnotationJsonExclusionStrategy())
                 .create();
