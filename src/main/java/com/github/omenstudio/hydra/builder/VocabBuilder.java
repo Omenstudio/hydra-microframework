@@ -46,7 +46,7 @@ public class VocabBuilder {
 
     private void readMainVocab() {
 
-        String readedData = readFileContent(vocabDirectory + "/" + vocabFile)
+        String readedData = readFileContent(vocabDirectory + vocabFile)
                 .replaceAll("API_ADDR", HydraUrlResolver.getServerAddress() + HydraUrlResolver.getApiAddress())
                 .replaceAll("VOCAB_ADDR", HydraUrlResolver.getServerAddress() + HydraUrlResolver.getVocabAddress());
 
